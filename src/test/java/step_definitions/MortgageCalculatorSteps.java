@@ -32,6 +32,35 @@ public class MortgageCalculatorSteps {
         LOGGER.info("navigated to Real Apr page");
     }
 
+    @When("^user enters data$")
+    public void enterData(DataTable dataTable) {
+        List<Map<String, String>> mortgare = dataTable.asMaps(String.class, String.class);
+        for (Map<String, String> cells : mortgare) {
+            new Home(driver)
+                    .typeHomePrice(cells.get("HomePrice"))
+                    .typeLoanAmount(cells.get("DownPayment"))
+                    .clickDownPaymentInDollar()
+                    .typeLoanAmount(cells.get("LoanAmount"))
+                    .typeInterestRate(cells.get("InterestRate"))
+                    .typeLoanTerm(cells.get("LoanTerm"))
+                    .selectMonth("Jan")
+                    .typeYear("2022")
+                    .typePropertyTax(cells.get("PropertyTax"))
+                    .typePmi(cells.get("PMI"))
+                    .typeHomeOwnerInsurance(cells.get("HOI"))
+                    .typeMonthlyHoa(cells.get("HOA"))
+                    .selectLoanType(cells.get("LoanType"))
+                    .selectBuyOrRefi(cells.get("BuyOrRefi"));
+        }
+        LOGGER.info("Monthly mortgage rate is calculated upon entering the data");
+    }
+
+    @And("^click on calculate button$")
+    public void clickOnCalculateButton() {
+        new Home(driver)
+                .clickCalculateButton();
+    }
+
     @When("^user clicks on calculate button upon entering the data$")
     public void clickOnCalculateButtonUponEnteringData(DataTable table) {
         List<Map<String, String>> data = table.asMaps(String.class, String.class);
@@ -51,5 +80,12 @@ public class MortgageCalculatorSteps {
         new RealApr(driver)
                 .validateAprRate(realApr);
         LOGGER.info("The real Apr is validated");
+    }
+
+
+    @Then("^the monthly payment is \"(.+?)\"$")
+    public void validateMonthlyPayment(String monthlyPayment) {
+        new Home(driver)
+                .validateMonthlyPayment(monthlyPayment);
     }
 }
